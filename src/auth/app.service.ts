@@ -4,7 +4,9 @@ import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
-import { UpdateUserDto } from './dto/update-user.dto'; // Добавленный импорт
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class AppService {
@@ -14,12 +16,14 @@ export class AppService {
     private jwtService: JwtService
   ) {}
 
-  async register(dto: Omit<User, 'id'>): Promise<User> {
+  async register(dto: RegisterDto): Promise<Omit<User, 'password'>> {
     const user = this.userRepository.create(dto);
-    return this.userRepository.save(user);
+    await this.userRepository.save(user);
+    const { password, ...result } = user;
+    return result;
   }
 
-  async login(dto: { login: string; password: string }) {
+  async login(dto: LoginDto) {
     const user = await this.userRepository.findOne({
       where: { login: dto.login },
       select: ['id', 'login', 'password', 'email', 'age']
@@ -63,6 +67,6 @@ export class AppService {
 
   async deleteUser(id: number) {
     const deleteResult = await this.userRepository.delete(id);
-    return { deleted: (deleteResult.affected || 0) > 0 }; // Исправленная строка
+    return { deleted: (deleteResult.affected || 0) > 0 };
   }
 }

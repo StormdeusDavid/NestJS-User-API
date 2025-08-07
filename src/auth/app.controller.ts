@@ -1,6 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Post, Body, Get, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('auth')
@@ -8,12 +10,12 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Post('register')
-  register(@Body() dto: any) {
+  register(@Body() dto: RegisterDto) {
     return this.appService.register(dto);
   }
 
   @Post('login')
-  login(@Body() dto: { login: string; password: string }) {
+  login(@Body() dto: LoginDto) {
     return this.appService.login(dto);
   }
 
