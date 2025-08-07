@@ -1,46 +1,43 @@
-import { Controller, Post, Body, Get, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
-import { AppService } from './app.service';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Controller, Post, Body, Get, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { PrismaService } from '../prisma.service';
+import * as bcrypt from 'bcrypt';
 
 @Controller('auth')
-export class AppController {
-  constructor(private readonly appService: AppService) {}
+export class AuthController {
+  constructor(private readonly prisma: PrismaService) {}
 
   @Post('register')
-  register(@Body() dto: RegisterDto) {
-    return this.appService.register(dto);
+  async register(@Body() userData: {
+    login: string;
+    email: string;
+    password: string;
+    age: number;
+    description: string;
+  }) {
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const user = await this.prisma.user.create({
+      data: {
+        ...userData,
+        password: hashedPassword,
+      },
+    });
+    return { id: user.id, login: user.login };
   }
 
+  @UseGuards(AuthGuard('local'))
   @Post('login')
-  login(@Body() dto: LoginDto) {
-    return this.appService.login(dto);
+  async login(@Req() req) {
+    return req.user;
   }
 
-  @Get('users')
-  @UseGuards(JwtAuthGuard)
-  getUsers(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
-    @Query('login') login?: string
-  ) {
-    return this.appService.getUsers(page, limit, login);
-  }
-
-  @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  updateUser(
-    @Param('id') id: string,
-    @Body() dto: UpdateUserDto
-  ) {
-    return this.appService.updateUser(+id, dto);
-  }
-
-  @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  deleteUser(@Param('id') id: string) {
-    return this.appService.deleteUser(+id);
+  @UseGuards(AuthGuard('jwt'))
+  @Get('profile/my')
+  async getProfile(@Req() req) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: req.user.id },
+    });
+    const { password, ...result } = user;
+    return result;
   }
 }
