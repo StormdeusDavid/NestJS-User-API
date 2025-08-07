@@ -1,7 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { User } from './entities/user.entity';
+import { Controller, Get } from '@nestjs/common';
 
+@Controller()
+export class AppController {
+  @Get()
+  getHello() {
+    return { 
+      message: 'API is working',
+      endpoints: {
+        users: '/users',
+        auth: '/auth'
+      }
+    };
+  }
+}
 describe('AppController', () => {
   let appController: AppController;
 
