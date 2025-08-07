@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { User } from './user.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { AppController } from './auth/app.controller';
+import { ProfileController } from './auth/profile.controller';
+import { AppService } from './auth/app.service';
+import { User } from './entities/user.entity';
 
 @Module({
   imports: [
@@ -12,13 +14,17 @@ import { User } from './user.entity';
       port: 5432,
       username: 'postgres',
       password: 'postgres',
-      database: 'postgres',
+      database: 'nest_db',
       entities: [User],
-      synchronize: true
+      synchronize: true,
     }),
-    TypeOrmModule.forFeature([User])
+    TypeOrmModule.forFeature([User]),
+    JwtModule.register({
+      secret: 'your-secret-key',
+      signOptions: { expiresIn: '1h' },
+    }),
   ],
-  controllers: [AppController],
-  providers: [AppService]
+  controllers: [AppController, ProfileController],
+  providers: [AppService],
 })
 export class AppModule {}
