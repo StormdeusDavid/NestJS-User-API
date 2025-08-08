@@ -1,19 +1,24 @@
 FROM node:18-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
-
 RUN npm install
 
+# Копируем остальные файлы
 COPY . .
 
-# Указываем переменные окружения для сборки
-ENV DB_PORT=5432
-ENV DB_HOST=db
-ENV DB_USER=postgres
-ENV DB_PASSWORD=postgres
-ENV DB_NAME=nestjs_db
+# Устанавливаем переменные окружения для сборки
+ARG DB_HOST=postgres
+ARG DB_PORT=5432
+ARG DB_USERNAME=postgres
+ARG DB_PASSWORD=postgres
+ARG DB_DATABASE=nest_db
+ENV DB_HOST=$DB_HOST \
+    DB_PORT=$DB_PORT \
+    DB_USERNAME=$DB_USERNAME \
+    DB_PASSWORD=$DB_PASSWORD \
+    DB_DATABASE=$DB_DATABASE
 
 RUN npm run build
 
