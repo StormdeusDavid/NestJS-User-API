@@ -1,0 +1,110 @@
+🚀 ПРИМЕРЫ ИСПОЛЬЗОВАНИЯ API
+
+=====================================
+1. РЕГИСТРАЦИЯ ПОЛЬЗОВАТЕЛЯ
+=====================================
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "login": "testuser",
+  "email": "test@example.com",
+  "password": "password123",
+  "age": 25,
+  "description": "Test user description"
+}
+
+Ожидаемый ответ:
+{
+  "id": 1,
+  "message": "User registered successfully"
+}
+
+=====================================
+2. ВХОД В СИСТЕМУ (ЛОГИН)
+=====================================
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "login": "testuser",
+  "password": "password123"
+}
+
+Ожидаемый ответ:
+{
+  "message": "Login successful",
+  "userId": 1,
+  "login": "testuser"
+}
+
+=====================================
+3. ПОЛУЧЕНИЕ СВОЕГО ПРОФИЛЯ
+=====================================
+GET http://localhost:3000/auth/profile/my
+Authorization: Bearer <ваш_токен>
+
+Ожидаемый ответ:
+{
+  "id": 1,
+  "login": "testuser",
+  "email": "test@example.com",
+  "age": 25,
+  "about": "Test user description"
+}
+
+=====================================
+4. ОБНОВЛЕНИЕ ПРОФИЛЯ
+=====================================
+PUT http://localhost:3000/auth/profile/my
+Content-Type: application/json
+Authorization: Bearer <ваш_токен>
+
+{
+  "email": "newemail@example.com",
+  "age": 30,
+  "description": "Updated description"
+}
+
+Ожидаемый ответ:
+{
+  "message": "Profile updated successfully"
+}
+
+=====================================
+5. УДАЛЕНИЕ ПРОФИЛЯ
+=====================================
+DELETE http://localhost:3000/auth/profile/my
+Authorization: Bearer <ваш_токен>
+
+Ожидаемый ответ:
+{
+  "message": "Profile deleted successfully"
+}
+
+=====================================
+6. ПОЛУЧЕНИЕ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ
+=====================================
+GET http://localhost:3000/auth/users
+Authorization: Bearer <ваш_токен>
+
+Ожидаемый ответ:
+{
+  "users": [...],
+  "total": 1,
+  "page": 1,
+  "limit": 10,
+  "totalPages": 1
+}
+
+=====================================
+7. ПОЛЬЗОВАТЕЛИ С ПАГИНАЦИЕЙ
+=====================================
+GET http://localhost:3000/auth/users?page=1&limit=5
+Authorization: Bearer <ваш_токен>
+
+=====================================
+8. ПОИСК ПОЛЬЗОВАТЕЛЕЙ ПО ЛОГИНУ
+=====================================
+GET http://localhost:3000/auth/users?login=test&page=1&limit=10
+Authorization: Bearer <ваш_токен>

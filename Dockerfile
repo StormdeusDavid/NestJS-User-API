@@ -2,24 +2,24 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+# Установка зависимостей для сборки
+RUN apk add --no-cache python3 make g++ bash
+
+# Копируем package файлы
 COPY package*.json ./
+
+# Устанавливаем зависимости
 RUN npm install
 
-# Копируем остальные файлы
+# Копируем исходный код
 COPY . .
 
-# Устанавливаем переменные окружения для сборки
-ARG DB_HOST=postgres
-ARG DB_PORT=5432
-ARG DB_USERNAME=postgres
-ARG DB_PASSWORD=postgres
-ARG DB_DATABASE=nest_db
-ENV DB_HOST=$DB_HOST \
-    DB_PORT=$DB_PORT \
-    DB_USERNAME=$DB_USERNAME \
-    DB_PASSWORD=$DB_PASSWORD \
-    DB_DATABASE=$DB_DATABASE
+# Создаем директорию dist если её нет
+RUN mkdir -p dist
 
+# Собираем приложение
 RUN npm run build
 
-CMD ["npm", "run", "start:prod"]
+EXPOSE 3000
+
+CMD ["node", "dist/main.js"]

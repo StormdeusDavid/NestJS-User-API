@@ -1,7 +1,7 @@
-
 services:
   postgres:
     image: postgres:14
+    container_name: postgres  # Явное имя контейнера
     environment:
       POSTGRES_DB: nest_db
       POSTGRES_USER: postgres
@@ -18,13 +18,14 @@ services:
 
   app:
     build: .
+    container_name: app  # Явное имя контейнера
     ports:
       - "3000:3000"
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      DB_HOST: postgres
+      DB_HOST: postgres  # Оставляем как есть (работает внутри Docker-сети)
       DB_PORT: 5432
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
@@ -33,6 +34,7 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+    restart: unless-stopped  # Автоперезапуск при падении
 
 volumes:
   postgres_data:

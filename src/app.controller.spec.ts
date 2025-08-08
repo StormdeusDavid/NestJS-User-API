@@ -1,36 +1,28 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
-import { User } from './entities/user.entity';
-import { Controller, Get } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import { AppController } from './auth/app.controller';
+import { AuthModule } from './auth/auth.module';
 
-@Controller()
-export class AppController {
-  @Get()
-  getHello() {
-    return { 
-      message: 'API is working',
-      endpoints: {
-        users: '/users',
-        auth: '/auth'
-      }
-    };
-  }
-}
 describe('AppController', () => {
   let appController: AppController;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
+    const moduleRef = await Test.createTestingModule({
+      imports: [AuthModule],
       controllers: [AppController],
-      providers: [AppService],
     }).compile();
 
-    appController = app.get<AppController>(AppController);
+    appController = moduleRef.get<AppController>(AppController);
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return API status', () => {
+      expect(appController.getHello()).toEqual({
+        status: 'API is working',
+        endpoints: {
+          auth: '/auth',
+          profile: '/profile'
+        }
+      });
     });
   });
 });
