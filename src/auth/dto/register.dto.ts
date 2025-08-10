@@ -15,7 +15,7 @@ export class RegisterDto {
   @Min(12)
   age: number;
 
-  @IsString()
-  @Length(1, 1000)
-  about: string;
+  @IsString()        
+  @Length(1, 1000)   
+  description: string; 
 }
